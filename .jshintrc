@@ -9,5 +9,7 @@
   "node": true,
 
   // Warn for unused variables and function parameters.
-  "unused": true
+  "unused": true,
+
+  "esnext": true
 }
