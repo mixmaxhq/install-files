@@ -1,13 +1,13 @@
 // This must be required before we denodeify `fs` functions in order to retrieve the patched versions.
 var mockFs = require('mock-fs');
 var denodeify = require('denodeify');
-var initFiles = denodeify(require('../src'));
+var installFiles = denodeify(require('../src'));
 var readdir = denodeify(require('fs').readdir);
 var readFile = denodeify(require('fs').readFile);
 
-describe('initFiles', function() {
+describe('installFiles', function() {
   it('should refuse to run outside of a package\'s `install` or `postinstall` script', function(done) {
-    initFiles('sourceDir').catch((err) => {
+    installFiles('sourceDir').catch((err) => {
       expect(err).toMatch('install');
       done();
     });
@@ -21,7 +21,7 @@ describe('initFiles', function() {
       process.env.npm_lifecycle_event = 'install';
 
       // This mirrors a scenario where the user executes `npm install` inside `/foo/bar`;
-      // `ebextensions` is the package calling `init-files` from its install script
+      // `ebextensions` is the package calling `install-files` from its install script
       // as it is installed into `bar`.
       //
       // The `mockFs` calls below will create the directory structure for this. The other file paths
@@ -44,7 +44,7 @@ describe('initFiles', function() {
         }
       });
 
-      initFiles('sourceDir')
+      installFiles('sourceDir')
         .then(() => readdir('/foo/bar'))
         .then((files) => expect(files).toEqual(['file.txt', 'node_modules']))
         .then(done)
@@ -60,7 +60,7 @@ describe('initFiles', function() {
         }
       });
 
-      initFiles('sourceDir')
+      installFiles('sourceDir')
         .then(() => readdir('/foo/bar'))
         .then((files) => expect(files).toEqual(['dir', 'node_modules']))
         .then(() => readdir('/foo/bar/dir'))
@@ -81,7 +81,7 @@ describe('initFiles', function() {
         }
       });
 
-      initFiles('sourceDir')
+      installFiles('sourceDir')
         .then(() => readdir('/foo/bar'))
         .then((files) => expect(files).toEqual(['dir', 'node_modules']))
         .then(() => readdir('/foo/bar/dir'))
@@ -99,7 +99,7 @@ describe('initFiles', function() {
         }
       });
 
-      initFiles('sourceDir')
+      installFiles('sourceDir')
         .then(() => readdir('/foo/bar'))
         .then((files) => expect(files).toEqual(['file.txt', 'node_modules']))
         .then(() => readFile('/foo/bar/file.txt', 'utf8'))

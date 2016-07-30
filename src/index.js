@@ -1,7 +1,7 @@
 var hostPackageDir = require('./hostPackageDir');
 var ncp = require('ncp');
 
-function initFiles(sourceDir, done) {
+function installFiles(sourceDir, done) {
   var lifecycleEvent = process.env.npm_lifecycle_event;
   var packageIsInstalling = ((lifecycleEvent === 'install') || (lifecycleEvent === 'postinstall'));
   if (!packageIsInstalling) {
@@ -18,4 +18,4 @@ function initFiles(sourceDir, done) {
   }, done);
 }
 
-module.exports = initFiles;
+module.exports = installFiles;

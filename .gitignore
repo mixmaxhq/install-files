@@ -29,3 +29,4 @@ node_modules
 
 .DS_Store
 spec/browser/spec.bundle.js
+*.sublime-workspace
