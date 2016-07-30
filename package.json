@@ -2,6 +2,7 @@
   "name": "init-files",
   "version": "1.0.0",
   "description": "",
+  "bin": "bin/init-files.js",
   "main": "src/index.js",
   "scripts": {
     "test": "jasmine"
@@ -15,5 +16,6 @@
   },
   "dependencies": {
     "ncp": "^2.0.0",
+    "yargs": "^4.8.1"
   }
 }
