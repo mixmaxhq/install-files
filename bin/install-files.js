@@ -7,7 +7,7 @@ var argv = require('yargs')
   .demand(1, 'Error: Specify a source directory.')
   .help('h')
   .alias('h', 'help')
-  .epilog('Recursively merges `sourceDir` into a host package\'s directory when a package is ' +
+  .epilog('Recursively merges `sourceDir` into a host package\'s directory when a dependency is ' +
     'being installed. For more information, see https://github.com/mixmaxhq/node-install-files.')
   .argv;
 
