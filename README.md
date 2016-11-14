@@ -71,6 +71,13 @@ npm install install-files --save
 
 You install `install-files` into the package with the files to install, as per the [example](#example).
 
+You should recommend that the package with the files to install is installed as a dev dependency
+(`npm install my-ebextensions --save-dev`, for example) so that it does not try to install the
+files in a production environment. The files should have been installed and committed prior to then
+(when the package was installed locally), so this work should be redundant; and trying to install
+the files on the production server can result in weird effects if for instance you're caching your
+Node modules somewhere other than your application directory.
+
 ## Usage details
 
 For a quick run-down, see the [example](#example). More details:
