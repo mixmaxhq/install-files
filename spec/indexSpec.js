@@ -2,6 +2,7 @@
 var mockFs = require('mock-fs');
 var denodeify = require('denodeify');
 var installFiles = denodeify(require('../src'));
+var path = require('path');
 var readdir = denodeify(require('fs').readdir);
 var readFile = denodeify(require('fs').readFile);
 
@@ -14,7 +15,7 @@ describe('installFiles', function() {
   });
 
   describe('installing', function() {
-    var previousNpmLifecycleEvent;
+    var previousNpmLifecycleEvent, previousScriptPath;
 
     beforeEach(function() {
       previousNpmLifecycleEvent = process.env.npm_lifecycle_event;
@@ -26,7 +27,10 @@ describe('installFiles', function() {
       //
       // The `mockFs` calls below will create the directory structure for this. The other file paths
       // will be relative to this.
-      spyOn(process, 'cwd').and.returnValue('/foo/bar/node_modules/ebextensions');
+      var fileInstallingPackagePath = '/foo/bar/node_modules/ebextensions';
+      spyOn(process, 'cwd').and.returnValue(fileInstallingPackagePath);
+      previousScriptPath = process.env._;
+      process.env._ = path.join(fileInstallingPackagePath, '/node_modules/.bin/install-files');
 
       // Create a mock file system just as safety belts for a test forgetting to do so.
       mockFs();
@@ -34,6 +38,7 @@ describe('installFiles', function() {
 
     afterEach(function() {
       process.env.npm_lifecycle_event = previousNpmLifecycleEvent;
+      process.env._ = previousScriptPath;
       mockFs.restore();
     });
 

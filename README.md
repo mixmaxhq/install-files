@@ -74,9 +74,7 @@ You install `install-files` into the package with the files to install, as per t
 You should recommend that the package with the files to install is installed as a dev dependency
 (`npm install my-ebextensions --save-dev`, for example) so that it does not try to install the
 files in a production environment. The files should have been installed and committed prior to then
-(when the package was installed locally), so this work should be redundant; and trying to install
-the files on the production server can result in weird effects if for instance you're caching your
-Node modules somewhere other than your application directory.
+(when the package was installed locally), so this work should be redundant.
 
 ## Usage details
 
@@ -113,4 +111,5 @@ To run the Node tests: `npm test`.
 
 ## Release History
 
+* 1.0.1 Properly determine the host package's directory even if its Node modules are cached elsewhere
 * 1.0.0 Initial release.
