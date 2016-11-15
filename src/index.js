@@ -24,9 +24,15 @@ function installFiles(sourceDir, done) {
     return;
   }
 
-  // When this is called from a package's 'install' or 'postinstall' script, we expect `process.cwd()`
-  // to be the directory of that package. Thus, we should install into _its_ host package's directory.
-  var destinationDir = hostPackageDir(process.cwd());
+  // When this is called from a package's 'install' or 'postinstall' script, this will be the path
+  // to `install-files` within that package's `node_modules/.bin` directory.
+  var scriptPath = process.env._;
+
+  // The path to the package running the 'install' or 'postinstall' script.
+  var fileInstallingPackagePath = hostPackageDir(scriptPath);
+
+  // The path to the package into which we should install the files.
+  var destinationDir = fileInstallingPackagePath && hostPackageDir(fileInstallingPackagePath);
   if (!destinationDir) {
     var error2 = new Error('Could not determine the install destination directory.');
     process.nextTick(() => done(error2));
