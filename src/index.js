@@ -1,5 +1,7 @@
 var hostPackageDir = require('./hostPackageDir');
 var ncp = require('ncp');
+var npmv = require('./npm-version');
+var path = require('path');
 
 /**
  * Copies the files contained within _sourceDir_ into a host package's directory when called from
@@ -31,15 +33,27 @@ function installFiles(sourceDir, done) {
   // The path to the package running the 'install' or 'postinstall' script.
   var fileInstallingPackagePath = hostPackageDir(scriptPath);
 
-  // The path to the package into which we should install the files.
-  var destinationDir = fileInstallingPackagePath && hostPackageDir(fileInstallingPackagePath);
-  if (!destinationDir) {
+  var source, target;
+  switch (npmv.majorVersion()) {
+    case '3':
+      source = path.join(fileInstallingPackagePath, 'node_modules', process.env.npm_package_name, sourceDir);
+      target = fileInstallingPackagePath
+      break;
+    default:
+      source = sourceDir;
+      target = fileInstallingPackagePath && hostPackageDir(fileInstallingPackagePath);
+  }
+
+  if (fileInstallingPackagePath.match(".+" + process.env.npm_package_name + "$")) {
+    console.log("[install-files]: Target = self, skipping install")
+    return;
+  } else if (!target) {
     var error2 = new Error('Could not determine the install destination directory.');
     process.nextTick(() => done(error2));
     return;
   }
 
-  ncp(sourceDir, destinationDir, {
+  ncp(source, target, {
     // Intentionally overwrite existing files.
     // This lets the file-installing package push a new version of files to dependents when it is updated.
     clobber: true
