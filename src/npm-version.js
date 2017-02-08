@@ -7,8 +7,7 @@ function getVersion() {
   var version = undefined;
   if (process.env.npm_config_user_agent && process.env.npm_config_user_agent.match(/.*npm\/.+/)) {
     var agent = process.env.npm_config_user_agent.split(' ')
-    for (var index in agent) {
-      var token = agent[index];
+    for (var token of agent) {
       if (token.indexOf('npm/') == 0) {
         version = token.split('/')[1]
         break;
