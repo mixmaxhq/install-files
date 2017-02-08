@@ -1,5 +1,7 @@
 var hostPackageDir = require('./hostPackageDir');
 var ncp = require('ncp');
+var npmv = require('./npm-version');
+var path = require('path');
 
 /**
  * Copies the files contained within _sourceDir_ into a host package's directory when called from
@@ -31,15 +33,32 @@ function installFiles(sourceDir, done) {
   // The path to the package running the 'install' or 'postinstall' script.
   var fileInstallingPackagePath = hostPackageDir(scriptPath);
 
-  // The path to the package into which we should install the files.
-  var destinationDir = fileInstallingPackagePath && hostPackageDir(fileInstallingPackagePath);
-  if (!destinationDir) {
+  var source, target;
+  switch (npmv.majorVersion()) {
+    case '1':
+      console.log("[install-files]: WARNING: NPMv1 is not officially supported; unexpected results could occur. Consider upgrading to v2 or later");
+    case '2':
+      source = sourceDir;
+      target = fileInstallingPackagePath && hostPackageDir(fileInstallingPackagePath);
+      break;
+    case null:
+      console.log("[install-files]: WARNING: Could not determine NPM version"); //Fall back to default
+    default:
+      source = path.join(fileInstallingPackagePath, 'node_modules', process.env.npm_package_name, sourceDir);
+      target = fileInstallingPackagePath
+  }
+
+  if (fileInstallingPackagePath.match(".+" + process.env.npm_package_name + "$")) {
+    console.log("[install-files]: Target = self, skipping install")
+    process.nextTick(() => done());
+    return;
+  } else if (!target) {
     var error2 = new Error('Could not determine the install destination directory.');
     process.nextTick(() => done(error2));
     return;
   }
 
-  ncp(sourceDir, destinationDir, {
+  ncp(source, target, {
     // Intentionally overwrite existing files.
     // This lets the file-installing package push a new version of files to dependents when it is updated.
     clobber: true
