@@ -111,5 +111,6 @@ To run the Node tests: `npm test`.
 
 ## Release History
 
+* 1.1.0 Support npm 3 (#5 - [@GoGoCarl](https://github.com/GoGoCarl))
 * 1.0.1 Properly determine the host package's directory even if its Node modules are cached elsewhere
 * 1.0.0 Initial release.
