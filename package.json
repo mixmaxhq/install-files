@@ -1,6 +1,6 @@
 {
   "name": "install-files",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "",
   "bin": "bin/install-files.js",
   "main": "src/index.js",
