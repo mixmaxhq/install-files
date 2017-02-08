@@ -41,7 +41,7 @@ function installFiles(sourceDir, done) {
       source = sourceDir;
       target = fileInstallingPackagePath && hostPackageDir(fileInstallingPackagePath);
       break;
-    case undefined:
+    case null:
       console.log("[install-files]: WARNING: Could not determine NPM version"); //Fall back to default
     default:
       source = path.join(fileInstallingPackagePath, 'node_modules', process.env.npm_package_name, sourceDir);
