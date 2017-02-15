@@ -4,12 +4,12 @@
  * @return {String} - The full version as a string, or undefined if not available
  */
 function getVersion() {
-  var version = undefined;
+  var version;
   if (process.env.npm_config_user_agent && process.env.npm_config_user_agent.match(/.*npm\/.+/)) {
-    var agent = process.env.npm_config_user_agent.split(' ')
+    var agent = process.env.npm_config_user_agent.split(' ');
     for (var token of agent) {
-      if (token.indexOf('npm/') == 0) {
-        version = token.split('/')[1]
+      if (token.indexOf('npm/') === 0) {
+        version = token.split('/')[1];
         break;
       }
     }
@@ -25,4 +25,4 @@ function getMajorVersion() {
 module.exports = {
   version: getVersion,
   majorVersion: getMajorVersion
-}
+};
