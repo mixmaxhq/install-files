@@ -111,6 +111,7 @@ To run the Node tests: `npm test`.
 
 ## Release History
 
+* 1.1.1 Fix unnecessary guard that disabled module ([#6](https://github.com/mixmaxhq/install-files/pull/6))
 * 1.1.0 Support npm 3 ([#5](https://github.com/mixmaxhq/install-files/pull/5) - [@GoGoCarl](https://github.com/GoGoCarl))
 * 1.0.1 Properly determine the host package's directory even if its Node modules are cached elsewhere
 * 1.0.0 Initial release.
