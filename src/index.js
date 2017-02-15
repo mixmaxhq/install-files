@@ -37,22 +37,20 @@ function installFiles(sourceDir, done) {
   switch (npmv.majorVersion()) {
     case '1':
       console.log("[install-files]: WARNING: NPMv1 is not officially supported; unexpected results could occur. Consider upgrading to v2 or later");
+      /* falls through */
     case '2':
       source = sourceDir;
       target = fileInstallingPackagePath && hostPackageDir(fileInstallingPackagePath);
       break;
     case null:
-      console.log("[install-files]: WARNING: Could not determine NPM version"); //Fall back to default
+      console.log("[install-files]: WARNING: Could not determine NPM version");
+      /* falls through */
     default:
       source = path.join(fileInstallingPackagePath, 'node_modules', process.env.npm_package_name, sourceDir);
-      target = fileInstallingPackagePath
+      target = fileInstallingPackagePath;
   }
 
-  if (fileInstallingPackagePath.match(".+" + process.env.npm_package_name + "$")) {
-    console.log("[install-files]: Target = self, skipping install")
-    process.nextTick(() => done());
-    return;
-  } else if (!target) {
+  if (!target) {
     var error2 = new Error('Could not determine the install destination directory.');
     process.nextTick(() => done(error2));
     return;
