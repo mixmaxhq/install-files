@@ -50,11 +50,7 @@ function installFiles(sourceDir, done) {
       target = fileInstallingPackagePath;
   }
 
-  if (fileInstallingPackagePath.match(".+" + process.env.npm_package_name + "$")) {
-    console.log("[install-files]: Target = self, skipping install");
-    process.nextTick(() => done());
-    return;
-  } else if (!target) {
+  if (!target) {
     var error2 = new Error('Could not determine the install destination directory.');
     process.nextTick(() => done(error2));
     return;
