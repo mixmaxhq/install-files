@@ -18,6 +18,16 @@ var path = require('path');
  * @param {Function<Error>} done - Errback.
  */
 function installFiles(sourceDir, done) {
+  /**
+   * Return early if the `CI` environment variable is set, since whatever files are expected to be
+   * installed by this dependency should have already been checked in in the parent project.
+   */
+  if (process.env.CI) {
+    console.log("[install-files] INFO: Skipping file installation because the `CI` environment variable is set.");
+    process.nextTick(done);
+    return;
+  }
+
   var lifecycleEvent = process.env.npm_lifecycle_event;
   var packageIsInstalling = ((lifecycleEvent === 'install') || (lifecycleEvent === 'postinstall'));
   if (!packageIsInstalling) {
