@@ -63,6 +63,14 @@ my-microservice/
   package.json
 ```
 
+It is recommended that you set the `CI` environment variable when `npm install`ing in CI so that you do not attempt to double-install files.
+
+(in project where this module is a transitive dependency; in your CI configuration)
+
+```
+CI=true npm install
+```
+
 ## Installation
 
 ```js
