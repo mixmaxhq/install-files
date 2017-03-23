@@ -63,14 +63,6 @@ my-microservice/
   package.json
 ```
 
-It is recommended that you set the `CI` environment variable when `npm install`ing in CI so that you do not attempt to double-install files.
-
-(in project where this module is a transitive dependency; in your CI configuration)
-
-```
-CI=true npm install
-```
-
 ## Installation
 
 ```js
@@ -83,6 +75,14 @@ You should recommend that the package with the files to install is installed as 
 (`npm install my-ebextensions --save-dev`, for example) so that it does not try to install the
 files in a production environment. The files should have been installed and committed prior to then
 (when the package was installed locally), so this work should be redundant.
+
+It is recommended that you set the `CI` environment variable when `npm install`ing in CI so that you do not attempt to double-install files.
+
+(in project where this module is a transitive dependency; in your CI configuration)
+
+```
+CI=true npm install
+```
 
 ## Usage details
 
