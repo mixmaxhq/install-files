@@ -24,6 +24,7 @@ function installFiles(sourceDir, done) {
    */
   if (process.env.CI) {
     console.log("[install-files] INFO: Skipping file installation because the `CI` environment variable is set.");
+    process.nextTick(done);
     return;
   }
 
