@@ -76,7 +76,7 @@ You should recommend that the package with the files to install is installed as 
 files in a production environment. The files should have been installed and committed prior to then
 (when the package was installed locally), so this work should be redundant.
 
-It is recommended that you set the `CI` environment variable when `npm install`ing in CI so that you do not attempt to double-install files.
+It is recommended that you set the `CI` environment variable when `npm install`ing in CI if your CI environment is a `development` environment where you don't want to run `install-files`.
 
 (in project where this module is a transitive dependency; in your CI configuration)
 
