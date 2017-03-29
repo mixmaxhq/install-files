@@ -2,6 +2,7 @@ var hostPackageDir = require('./hostPackageDir');
 var ncp = require('ncp');
 var npmv = require('./npm-version');
 var path = require('path');
+var fs = require('fs');
 
 /**
  * Copies the files contained within _sourceDir_ into a host package's directory when called from
@@ -43,6 +44,9 @@ function installFiles(sourceDir, done) {
   // The path to the package running the 'install' or 'postinstall' script.
   var fileInstallingPackagePath = hostPackageDir(scriptPath);
 
+  // The target package responsible for the 'install' or 'postinstall' event
+  var installTargetPackageName = process.env.npm_package_name;
+
   var source, target;
   switch (npmv.majorVersion()) {
     case '1':
@@ -56,7 +60,7 @@ function installFiles(sourceDir, done) {
       console.log("[install-files]: WARNING: Could not determine NPM version");
       /* falls through */
     default:
-      source = path.join(fileInstallingPackagePath, 'node_modules', process.env.npm_package_name, sourceDir);
+      source = path.join(fileInstallingPackagePath, 'node_modules', installTargetPackageName, sourceDir);
       target = fileInstallingPackagePath;
   }
 
@@ -66,11 +70,33 @@ function installFiles(sourceDir, done) {
     return;
   }
 
+  // If install destination is the current module, we can silently skip
+  if (installTargetPackageName == getModulePackageName(target)) {
+    process.nextTick(() => done());
+    return;
+  }
+
   ncp(source, target, {
     // Intentionally overwrite existing files.
     // This lets the file-installing package push a new version of files to dependents when it is updated.
     clobber: true
   }, done);
+}
+
+/**
+ * Attempt to determine the module's package name. If package.json exists, use the name 
+ * attribute from there; otherwise, infer a name from the directory structure
+ *
+ * @param {String} target - the target directory 
+*/
+function getModulePackageName(target) {
+  var packageName;
+  try {
+    packageName = JSON.parse(fs.readFileSync(path.join(target, 'package.json'), 'utf8')).name;
+  } catch (e) {
+    packageName = path.basename(target);
+  }
+  return packageName;
 }
 
 module.exports = installFiles;
