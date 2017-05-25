@@ -22,7 +22,12 @@ function getMajorVersion() {
   return version ? version[0] : null;
 }
 
+function isYarn() {
+  return /\byarn\//.test(process.env.npm_config_user_agent);
+}
+
 module.exports = {
   version: getVersion,
-  majorVersion: getMajorVersion
+  majorVersion: getMajorVersion,
+  isYarn: isYarn
 };

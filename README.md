@@ -119,6 +119,7 @@ To run the Node tests: `npm test`.
 
 ## Release History
 
+* 1.1.4 Add yarn support ([#11](https://github.com/mixmaxhq/install-files/issues/11))
 * 1.1.3 Ensure install doesn't run on self ([#9](https://github.com/mixmaxhq/install-files/pull/9) - [@GoGoCarl](https://github.com/GoGoCarl))
 * 1.1.2 Skip double-installation in CI
 * 1.1.1 Fix unnecessary guard that disabled module ([#6](https://github.com/mixmaxhq/install-files/pull/6))
