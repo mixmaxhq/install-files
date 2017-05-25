@@ -47,21 +47,21 @@ function installFiles(sourceDir, done) {
   // The target package responsible for the 'install' or 'postinstall' event
   var installTargetPackageName = process.env.npm_package_name;
 
+  var npmVersion = npmv.majorVersion();
+
+  if (npmVersion === '1') {
+    console.log("[install-files]: WARNING: npmv1 is not officially supported; unexpected results could occur. Consider upgrading to v2 or later");
+  } else if (npmVersion === null) {
+    console.log("[install-files]: WARNING: Could not determine npm version");
+  }
+
   var source, target;
-  switch (npmv.majorVersion()) {
-    case '1':
-      console.log("[install-files]: WARNING: NPMv1 is not officially supported; unexpected results could occur. Consider upgrading to v2 or later");
-      /* falls through */
-    case '2':
-      source = sourceDir;
-      target = fileInstallingPackagePath && hostPackageDir(fileInstallingPackagePath);
-      break;
-    case null:
-      console.log("[install-files]: WARNING: Could not determine NPM version");
-      /* falls through */
-    default:
-      source = path.join(fileInstallingPackagePath, 'node_modules', installTargetPackageName, sourceDir);
-      target = fileInstallingPackagePath;
+  if (npmv.isYarn() || ['1', '2'].indexOf(npmVersion) >= 0) {
+    source = sourceDir;
+    target = fileInstallingPackagePath && hostPackageDir(fileInstallingPackagePath);
+  } else {
+    source = path.join(fileInstallingPackagePath, 'node_modules', installTargetPackageName, sourceDir);
+    target = fileInstallingPackagePath;
   }
 
   if (!target) {
@@ -84,10 +84,10 @@ function installFiles(sourceDir, done) {
 }
 
 /**
- * Attempt to determine the module's package name. If package.json exists, use the name 
+ * Attempt to determine the module's package name. If package.json exists, use the name
  * attribute from there; otherwise, infer a name from the directory structure
  *
- * @param {String} target - the target directory 
+ * @param {String} target - the target directory
 */
 function getModulePackageName(target) {
   var packageName;
