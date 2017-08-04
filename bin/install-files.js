@@ -3,7 +3,7 @@
 var installFiles = require('../src');
 
 var argv = require('yargs')
-  .usage('Usage: $0 <sourceDir>')
+  .usage('Usage: $0 <sourceDir> [--raw]')
   .demand(1, 'Error: Specify a source directory.')
   .help('h')
   .alias('h', 'help')
@@ -12,7 +12,8 @@ var argv = require('yargs')
   .argv;
 
 var sourceDir = argv._[0];
+var raw = argv.raw;
 
-installFiles(sourceDir, function(err) {
+installFiles(sourceDir, raw, function(err) {
   if (err) console.error(err);
 });

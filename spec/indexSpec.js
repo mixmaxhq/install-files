@@ -8,7 +8,7 @@ var readFile = denodeify(require('fs').readFile);
 
 describe('installFiles', function() {
   it('should refuse to run outside of a package\'s `install` or `postinstall` script', function(done) {
-    installFiles('sourceDir').catch((err) => {
+    installFiles('sourceDir', false /* not raw */).catch((err) => {
       expect(err).toMatch('install');
       done();
     });
@@ -49,7 +49,7 @@ describe('installFiles', function() {
         }
       });
 
-      installFiles('sourceDir')
+      installFiles('sourceDir', false /* not raw */)
         .then(() => readdir('/foo/bar'))
         .then((files) => expect(files).toEqual(['file.txt', 'node_modules']))
         .then(done)
@@ -65,7 +65,7 @@ describe('installFiles', function() {
         }
       });
 
-      installFiles('sourceDir')
+      installFiles('sourceDir', false /* not raw */)
         .then(() => readdir('/foo/bar'))
         .then((files) => expect(files).toEqual(['dir', 'node_modules']))
         .then(() => readdir('/foo/bar/dir'))
@@ -86,7 +86,7 @@ describe('installFiles', function() {
         }
       });
 
-      installFiles('sourceDir')
+      installFiles('sourceDir', false /* not raw */)
         .then(() => readdir('/foo/bar'))
         .then((files) => expect(files).toEqual(['dir', 'node_modules']))
         .then(() => readdir('/foo/bar/dir'))
@@ -104,11 +104,61 @@ describe('installFiles', function() {
         }
       });
 
-      installFiles('sourceDir')
+      installFiles('sourceDir', false /* not raw */)
         .then(() => readdir('/foo/bar'))
         .then((files) => expect(files).toEqual(['file.txt', 'node_modules']))
         .then(() => readFile('/foo/bar/file.txt', 'utf8'))
         .then((fileContents) => expect(fileContents).toBe('hi world'))
+        .then(done)
+        .catch((err) => done.fail(err));
+    });
+
+    it('should be able correctly handle a handlebars template', function(done) {
+      mockFs({
+        'sourceDir': {
+          'file.txt': '{{#if hello}}hello world{{else}}goodbye{{/if}}'
+        }
+      });
+
+      installFiles('sourceDir', false /* not raw */)
+        .then(() => readdir('/foo/bar'))
+        .then((files) => expect(files).toEqual(['file.txt', 'node_modules']))
+        .then(() => readFile('/foo/bar/file.txt', 'utf8'))
+        .then((fileContents) => expect(fileContents).toBe('goodbye'))
+        .then(done)
+        .catch((err) => done.fail(err));
+    });
+
+    it('should be able correctly handle a handlebars template', function(done) {
+      mockFs({
+        'sourceDir': {
+          'file.txt': '{{#if hello}}hello world{{else}}goodbye{{/if}}'
+        },
+        '/foo/bar/package.json': '{"install-files": { "hello": true } }'
+      });
+
+      installFiles('sourceDir', false /* not raw */)
+        .then(() => readdir('/foo/bar'))
+        .then((files) => expect(files).toEqual(['file.txt', 'node_modules', 'package.json']))
+        .then(() => readFile('/foo/bar/file.txt', 'utf8'))
+        .then((fileContents) => expect(fileContents).toBe('hello world'))
+        .then(done)
+        .catch((err) => done.fail(err));
+    });
+
+    it('should never process a file as a template if --raw is provided', function(done) {
+      mockFs({
+        'sourceDir': {
+          'file.txt': '{{#if hello}}hello world{{else}}goodbye{{/if}}'
+        },
+        '/foo/bar/package.json': '{"install-files": { "hello": true } }'
+      });
+
+      installFiles('sourceDir', true /* raw */)
+        .then(() => readdir('/foo/bar'))
+        .then((files) => expect(files).toEqual(['file.txt', 'node_modules', 'package.json']))
+        .then(() => readFile('/foo/bar/file.txt', 'utf8'))
+        .then((fileContents) => expect(fileContents).toBe('{{#if hello}}hello world{{else}}goodbye{{/if}}'))
         .then(done)
         .catch((err) => done.fail(err));
     });

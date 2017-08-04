@@ -15,7 +15,9 @@
     "mock-fs": "^3.11.0"
   },
   "dependencies": {
+    "handlebars": "^4.0.10",
     "ncp": "^2.0.0",
+    "stream-to-string": "^1.1.0",
     "yargs": "^4.8.1"
   }
 }
