@@ -1,8 +1,12 @@
+var Handlebars = require('handlebars');
 var hostPackageDir = require('./hostPackageDir');
 var ncp = require('ncp');
 var npmv = require('./npm-version');
 var path = require('path');
 var fs = require('fs');
+var Readable = require('stream').Readable;
+var toString = require('stream-to-string');
+
 
 /**
  * Copies the files contained within _sourceDir_ into a host package's directory when called from
@@ -16,9 +20,11 @@ var fs = require('fs');
  * script.
  *
  * @param {String} sourceDir - The path to the directory containing the files to be installed.
+ * @param {Boolean} raw - True if we do not want to process the files to be installed as handlebars
+ *    templates, falsy otherwise.
  * @param {Function<Error>} done - Errback.
  */
-function installFiles(sourceDir, done) {
+function installFiles(sourceDir, raw, done) {
   /**
    * Return early if the `CI` environment variable is set, since whatever files are expected to be
    * installed by this dependency should have already been checked in in the parent project.
@@ -76,11 +82,37 @@ function installFiles(sourceDir, done) {
     return;
   }
 
-  ncp(source, target, {
+  const options = {
     // Intentionally overwrite existing files.
     // This lets the file-installing package push a new version of files to dependents when it is updated.
     clobber: true
-  }, done);
+  };
+
+  // Only process the files as Handlebars templates if `raw` is falsy.
+  if (!raw) {
+    options.transform = function(read, write) {
+      // Try to find variables for the template.
+      var variables = {};
+      const targetPkg = path.join(target, 'package.json');
+      if (fs.existsSync(targetPkg)) {
+        variables = JSON.parse(fs.readFileSync(
+          targetPkg,
+          'utf8'
+        ))['install-files'];
+      }
+
+      toString(read)
+        .then(function(templ) {
+          var template = Handlebars.compile(templ);
+          var str = new Readable();
+          str.push(template(variables));
+          str.push(null);
+          str.pipe(write);
+        });
+    };
+  }
+
+  ncp(source, target, options, done);
 }
 
 /**
