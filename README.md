@@ -149,7 +149,7 @@ We welcome pull requests! Please lint your code.
 To run the Node tests: `npm test`.
 
 ## Release History
-
+* 2.0.0 Files are treated as Handlebars templates (unless `--raw` is provided).
 * 1.1.4 Add yarn support ([#11](https://github.com/mixmaxhq/install-files/issues/11))
 * 1.1.3 Ensure install doesn't run on self ([#9](https://github.com/mixmaxhq/install-files/pull/9) - [@GoGoCarl](https://github.com/GoGoCarl))
 * 1.1.2 Skip double-installation in CI
