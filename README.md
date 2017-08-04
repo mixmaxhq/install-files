@@ -109,6 +109,37 @@ Update the originals in the file-installing package, then push a new version of 
 `install-files` will _not_ prune files that have been removed from `source/`. If you feel that it
 should and have ideas about how to do it, please open an issue!
 
+### Files as templates
+
+You can also use the files to be installed as Handlebars templates. The variables for this will be
+sourced from the destination package's `package.json` file under the `install-files` section. So if
+we had the following file to be installed:
+```
+Hello there!
+
+{{#if niceToSeeYou}}It's so nice to see you!{{/if}}
+```
+
+and the destination that the file was being installed to had the following package.json:
+```
+{
+  "install-files": {
+    "niceToSeeYou": true
+  }
+}
+```
+
+then the resulting file, once installed, would be:
+```
+Hello there!
+
+It's so nice to see you!
+```
+
+Note that if there is no `package.json` file or if there isn't an `"install-files"` section the
+files to be installed will still be processed as Handlebars templates. If you don't want to
+have them processed, then simply provide the `--raw` option to the `install-files` invocation.
+
 ## Contributing
 
 We welcome pull requests! Please lint your code.
