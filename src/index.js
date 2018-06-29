@@ -47,6 +47,11 @@ function installFiles(sourceDir, done) {
   // The target package responsible for the 'install' or 'postinstall' event
   var installTargetPackageName = process.env.npm_package_name;
 
+  // When this is called from a package's 'install' or 'postinstall' script, this will be the path
+  // to the root of the package that has the 'install-files' hook in its package.json. This solves
+  // problems where npm doesn't flatten install-files because of conflicting versions.
+  var invokingPackage = process.env.PWD;
+
   var npmVersion = npmv.majorVersion();
 
   if (npmVersion === '1') {
@@ -59,7 +64,16 @@ function installFiles(sourceDir, done) {
   if (npmv.isYarn() || ['1', '2'].indexOf(npmVersion) >= 0) {
     source = sourceDir;
     target = fileInstallingPackagePath && hostPackageDir(fileInstallingPackagePath);
+  } else if (invokingPackage) {
+    // We know the package that's invoking us, so we just append the source directory.
+    source = path.join(invokingPackage, sourceDir);
+
+    // Get the directory of the package that hosts the invoking package. This isn't bulletproof, but
+    // it's the best guess we have.
+    target = invokingPackage && hostPackageDir(invokingPackage);
   } else {
+    // We expect PWD to be available at all times, but just in case it isn't, we fall back to
+    // previous behavior.
     source = path.join(fileInstallingPackagePath, 'node_modules', installTargetPackageName, sourceDir);
     target = fileInstallingPackagePath;
   }
